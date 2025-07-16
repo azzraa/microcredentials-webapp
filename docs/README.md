@@ -38,6 +38,16 @@ Make sure you have the following installed:
     ```bash
     npm start
     ```
+    
+5. Open a new terminal:
+    ```bash
+    cd backend
+    ```
+    
+6. Start backend server:
+    ```bash
+    node server.js
+    ```
 
 This will start the app on `http://localhost:3000` (or another port if `3000` is taken).
 
