@@ -1,119 +1,137 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const CreateCredentialForm = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    skills: '',
-    eqfLevel: '',
-  });
-
+const CreateCredentialForm = ({ onLogout }) => {
+  const [formData, setFormData] = useState({ title: '', description: '', category: '', skills: '', eqfLevel: '' });
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+  const buildJsonLdCredential = (formData) => {
+    return {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        {
+          "ex": "https://example.org/credentials/v1",
+          "eqfLevel": "ex:eqfLevel",
+          "skills": "ex:skills"
+        }
+      ],
+      type: ["VerifiableCredential", "Microcredential"],
+      issuer: "https://yourapp.example.com/issuer/123",
+      issuanceDate: new Date().toISOString(),
+      credentialSubject: {
+        id: "did:example:student-001",
+        title: formData.title,
+        description: formData.description,
+        eqfLevel: formData.eqfLevel,
+        skills: formData.skills.split(',').map(s => s.trim())
+      }
+    };
   };
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple validation check
     if (!formData.title || !formData.description) {
       setError('Title and Description are required!');
       return;
     }
 
-    console.log('Form data submitted:', formData);
-    setError('');
-    setFormData({ title: '', description: '', category: '', skills: '', eqfLevel: '' });
+    const jsonLdCredential = buildJsonLdCredential(formData);
+
+    try {
+      const response = await fetch('http://localhost:4000/api/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify(jsonLdCredential)
+      });
+
+      if (!response.ok) throw new Error('Failed to create credential');
+
+      const data = await response.json();
+      console.log('Credential created:', data);
+
+      setError('');
+      setFormData({ title: '', description: '', category: '', skills: '', eqfLevel: '' });
+      alert('Credential created successfully!');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '500px', margin: '0 auto', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-      <h2>Create a Microcredential</h2>
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-md shadow-md">
+      <h2 className="text-xl mb-4 font-bold">Create New Microcredential</h2>
+      {error && <p className="text-red-600 mb-2">{error}</p>}
 
-      {error && (
-        <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>
-      )}
-
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="title" style={{ display: 'block', marginBottom: '5px' }}>Title:</label>
-        <input 
-          type="text" 
-          id="title" 
-          name="title" 
-          value={formData.title} 
-          onChange={handleChange} 
-          required 
-          style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }} 
+      <form onSubmit={handleSubmit}>
+        <input
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleChange}
+          className="w-full mb-3 p-2 border rounded"
+          required
         />
-      </div>
-
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="description" style={{ display: 'block', marginBottom: '5px' }}>Description:</label>
-        <textarea 
-          id="description" 
-          name="description" 
-          value={formData.description} 
-          onChange={handleChange} 
-          required 
-          style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', height: '100px' }} 
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleChange}
+          className="w-full mb-3 p-2 border rounded"
+          required
         />
-      </div>
-
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="category" style={{ display: 'block', marginBottom: '5px' }}>Category:</label>
-        <input 
-          type="text" 
-          id="category" 
-          name="category" 
-          value={formData.category} 
-          onChange={handleChange} 
-          style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }} 
+        <input
+          name="category"
+          placeholder="Category"
+          value={formData.category}
+          onChange={handleChange}
+          className="w-full mb-3 p-2 border rounded"
         />
-      </div>
-
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="skills" style={{ display: 'block', marginBottom: '5px' }}>Skills (comma-separated):</label>
-        <input 
-          type="text" 
-          id="skills" 
-          name="skills" 
-          value={formData.skills} 
-          onChange={handleChange} 
-          style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }} 
+        <input
+          name="skills"
+          placeholder="Skills (comma separated)"
+          value={formData.skills}
+          onChange={handleChange}
+          className="w-full mb-3 p-2 border rounded"
         />
-      </div>
+        <input
+          name="eqfLevel"
+          placeholder="EQF Level"
+          value={formData.eqfLevel}
+          onChange={handleChange}
+          className="w-full mb-3 p-2 border rounded"
+        />
 
-      <div style={{ marginBottom: '15px' }}>
-        <label htmlFor="eqfLevel" style={{ display: 'block', marginBottom: '5px' }}>EQF Level:</label>
-        <select 
-          id="eqfLevel" 
-          name="eqfLevel" 
-          value={formData.eqfLevel} 
-          onChange={handleChange} 
-          style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mb-4"
         >
-          <option value="">--Select Level--</option>
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((level) => (
-            <option key={level} value={level}>{level}</option>
-          ))}
-        </select>
-      </div>
+          Create Credential
+        </button>
+      </form>
 
-      <button 
-        type="submit" 
-        style={{ width: '100%', padding: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-      >
-        Submit
-      </button>
-    </form>
+      <div className="flex gap-4">
+        <button
+          onClick={() => navigate('/')}
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+        >
+          Homepage
+        </button>
+
+        <button
+          onClick={onLogout}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
   );
 };
 
 export default CreateCredentialForm;
-
