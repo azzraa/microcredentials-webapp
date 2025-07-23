@@ -7,21 +7,24 @@
     "test": "echo \"No tests defined\" && exit 0",
     "eject": "react-scripts eject",
     "predeploy": "npm audit"
-
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.4",
     "axios": "^1.10.0",
+    "brace-expansion": "^4.0.1",
     "jwt-decode": "^4.0.0",
+    "nth-check": "^2.1.1",
+    "on-headers": "^1.1.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^7.6.3",
     "react-scripts": "^5.0.0",
-    "web-vitals": "^4.2.4"
+    "web-vitals": "^4.2.4",
+    "webpack-dev-server": "^5.2.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.0",
-    "postcss": "^8.0.0",
+    "postcss": "^8.5.6",
     "tailwindcss": "^3.0.0"
   },
   "browserslist": {
