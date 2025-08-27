@@ -56,13 +56,6 @@ This will start the app on `http://localhost:3000` (or another port if `3000` is
 - **Apply for microcredentials**: Users can apply for credentials by submitting work, skills, and documents.
 - **Evaluate applications**: Evaluators can review applications and provide feedback.
 
-## Folder Structure
-
-Here’s an overview of the folder structure:
-
-...
-
-
 ## Usage
 
 Once the app is running, you will be able to:
