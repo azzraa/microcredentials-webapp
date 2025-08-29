@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { getApiUrl } from '../helpers/api-url';
 
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  try {
-    const response = await fetch('http://localhost:4000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
-    console.log('Login response status:', response.status);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const response = await fetch(`${getApiUrl()}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      console.log('Login response status:', response.status);
 
-    if (!response.ok) throw new Error('Invalid credentials');
+      if (!response.ok) throw new Error('Invalid credentials');
 
-    const data = await response.json();
-    console.log('Login response data:', data);
-    localStorage.setItem('token', data.token);
-    onLogin(data.token);
-  } catch (err) {
-    console.error('Login error:', err);
-    setError(err.message);
-  }
-};
+      const data = await response.json();
+      console.log('Login response data:', data);
+      localStorage.setItem('token', data.token);
+      onLogin(data.token);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message);
+    }
+  };
 
 
   return (
