@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../helpers/api-url';
 
 export const EvaluatorDashboard = ({ onLogout }) => {
   const [applications, setApplications] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/applications', {
+    fetch(`${getApiUrl()}/api/applications`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
       .then(res => res.json())
@@ -14,7 +15,7 @@ export const EvaluatorDashboard = ({ onLogout }) => {
   }, []);
 
   const handleAction = (id, status) => {
-    fetch(`http://localhost:4000/api/applications/${id}`, {
+    fetch(`${getApiUrl()}/api/applications/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +53,7 @@ export const EvaluatorDashboard = ({ onLogout }) => {
           <p><strong>Comment:</strong> {app.comment}</p>
           {app.filePath && (
             <a
-              href={`http://localhost:4000/${app.filePath}`}
+              href={`${getApiUrl()}/${app.filePath}`}
               target="_blank"
               rel="noreferrer"
               className="text-blue-600 underline"

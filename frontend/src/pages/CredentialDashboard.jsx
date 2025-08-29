@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getApiUrl } from '../helpers/api-url';
 
 const CredentialDashboard = () => {
   const [credentials, setCredentials] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/credentials')
+    fetch(`${getApiUrl()}/api/credentials`)
       .then(res => res.json())
       .then(setCredentials);
   }, []);

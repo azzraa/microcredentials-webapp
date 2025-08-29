@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../helpers/api-url';
 
 const CreateCredentialForm = ({ onLogout }) => {
   const [formData, setFormData] = useState({ title: '', description: '', category: '', skills: '', eqfLevel: '' });
@@ -44,7 +45,7 @@ const CreateCredentialForm = ({ onLogout }) => {
     const jsonLdCredential = buildJsonLdCredential(formData);
 
     try {
-      const response = await fetch('http://localhost:4000/api/credentials', {
+      const response = await fetch(`${getApiUrl()}/api/credentials`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(jsonLdCredential)

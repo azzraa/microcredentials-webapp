@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../helpers/api-url';
 
 const UserApplyForm = ({ onLogout }) => {
   const [credentials, setCredentials] = useState([]);
@@ -12,7 +13,7 @@ const UserApplyForm = ({ onLogout }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/credentials')
+    fetch(`${getApiUrl()}/api/credentials`)
       .then(res => res.json())
       .then(setCredentials);
   }, []);
@@ -28,7 +29,7 @@ const UserApplyForm = ({ onLogout }) => {
       formData.append('file', submission.file);
     }
 
-    const response = await fetch(`http://localhost:4000/api/credentials/${selectedId}/applications`, {
+    const response = await fetch(`${getApiUrl()}/api/credentials/${selectedId}/applications`, {
       method: 'POST',
       body: formData,
     });
